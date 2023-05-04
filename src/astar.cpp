@@ -1,6 +1,7 @@
 #include "astar.h"
 
 cv::Mat visualMap(map_h, map_w, CV_8UC3, cv::Scalar(255, 255, 255));
+
 /**
  * @description: 建立网格地图
  * @return {*}
@@ -19,34 +20,16 @@ void GridMap(Point* start_point, Point* end_point) {
     cv::Point p2(c * cell_w, map_h);
     cv::line(visualMap, p1, p2, cv::Scalar(0, 0, 0), 1, cv::LINE_AA);
   }
-
   //起点、终点
   cv::rectangle(visualMap,
                 cv::Rect(start_point->x * cell_w, start_point->y * cell_h,
                          cell_w, cell_h),
                 cv::Scalar(0, 0, 255), -1);
+
   cv::rectangle(
       visualMap,
       cv::Rect(end_point->x * cell_w, end_point->y * cell_h, cell_w, cell_h),
       cv::Scalar(0, 0, 255), -1);
-
-  //障碍物
-  for (int i = 4; i < 8; i++) {
-    cv::rectangle(visualMap, cv::Rect(i * cell_w, 20 * cell_h, cell_w, cell_h),
-                  cv::Scalar(0, 0, 0), -1);
-  }
-  for (int i = 24; i < 38; i++) {
-    cv::rectangle(visualMap, cv::Rect(i * cell_w, 32 * cell_h, cell_w, cell_h),
-                  cv::Scalar(0, 0, 0), -1);
-  }
-  for (int i = 14; i < 28; i++) {
-    cv::rectangle(visualMap, cv::Rect(i * cell_w, 10 * cell_h, cell_w, cell_h),
-                  cv::Scalar(0, 0, 0), -1);
-  }
-  for (int i = 4; i < 38; i++) {
-    cv::rectangle(visualMap, cv::Rect(25 * cell_w, i * cell_h, cell_w, cell_h),
-                  cv::Scalar(0, 0, 0), -1);
-  }
 }
 
 /**
@@ -59,22 +42,25 @@ void painting(vector<Point*> openlist, vector<Point*> closelist,
               Point* current) {
   //先openlist
   for (auto i : openlist) {
-    cv::rectangle(visualMap,
-                  cv::Rect(i->x * cell_w, i->y * cell_h, cell_w, cell_h),
-                  cv::Scalar(170, 216, 152), -1);
+    cv::rectangle(
+        visualMap,
+        cv::Rect(i->x * cell_w, i->y * cell_h, cell_w * 0.8, cell_h * 0.8),
+        cv::Scalar(170, 216, 152), -1);
   }
   //再closelist
   for (auto i : closelist) {
-    cv::rectangle(visualMap,
-                  cv::Rect(i->x * cell_w, i->y * cell_h, cell_w, cell_h),
-                  cv::Scalar(255, 164, 178), -1);
+    cv::rectangle(
+        visualMap,
+        cv::Rect(i->x * cell_w, i->y * cell_h, cell_w * 0.8, cell_h * 0.8),
+        cv::Scalar(255, 164, 178), -1);
   }
   //最后cur point
   Point* tmp = current;
   while (tmp->parent != nullptr) {
-    cv::rectangle(visualMap,
-                  cv::Rect(tmp->x * cell_w, tmp->y * cell_h, cell_w, cell_h),
-                  cv::Scalar(71, 41, 252), -1);
+    cv::rectangle(
+        visualMap,
+        cv::Rect(tmp->x * cell_w, tmp->y * cell_h, cell_w * 0.8, cell_h * 0.8),
+        cv::Scalar(71, 41, 252), -1);
     tmp = tmp->parent;
   }
 }
@@ -172,7 +158,7 @@ vector<Point*> Astar::SolvePath() {
       //显示openlist用灰绿色，closelist用紫色，起点终点用红色，路径用红色，障碍物用黑色
       painting(OpenList, CloseList, cur);
       cv::imshow("A*", visualMap);
-      cv::waitKey(5000);
+      cv::waitKey(50000);
 
       vector<Point*> globalPath;
       while (cur->parent != nullptr) {
@@ -211,9 +197,10 @@ vector<Point*> Astar::SolvePath() {
     flag++;
     painting(OpenList, CloseList, cur);
     cv::imshow("A*", visualMap);
-    //每一帧图片之间的间隔，1对应1ms，如果为了放慢速度可自行增大
-    cv::waitKey(1);
+    //每一帧图片之间的间隔，20对应20ms，如果为了放慢速度可自行增大
+    cv::waitKey(20);
   }
-  std::cout << "没有找到最短路径" << std::endl;
+  std::cout << "该地图无解！" << std::endl;
+  cv::waitKey(10000);
   return vector<Point*>();
 }

@@ -14,4 +14,6 @@ cmake .. && make
 ./astar
 ```
 ## 效果
+**说明**：为了能够充分展示搜索的过程，在每一帧图片之间阻塞了20ms时间，具体阻塞时间可在atar.cpp的201行处调整  
+
 ![image](./image/astar.png)
